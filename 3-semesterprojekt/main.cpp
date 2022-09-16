@@ -2,6 +2,10 @@
 
 using namespace std;
 
+//Tilføj en kommentar!
+
+//en ny test!
+
 int main()
 {
     cout << "Hello World!" << endl;
