@@ -1,0 +1,3 @@
+C:/Users/Lauge/OneDrive/Dokumenter/GitHub/3.Semester/build-3-semesterprojekt-Desktop_Qt_6_2_3_MinGW_64_bit-Debug/CMakeFiles/3-semesterprojekt.dir
+C:/Users/Lauge/OneDrive/Dokumenter/GitHub/3.Semester/build-3-semesterprojekt-Desktop_Qt_6_2_3_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/Users/Lauge/OneDrive/Dokumenter/GitHub/3.Semester/build-3-semesterprojekt-Desktop_Qt_6_2_3_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir

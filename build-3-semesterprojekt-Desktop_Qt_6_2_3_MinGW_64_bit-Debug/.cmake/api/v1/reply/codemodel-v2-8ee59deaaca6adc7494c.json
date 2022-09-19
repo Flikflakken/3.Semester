@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "3-semesterprojekt",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "3-semesterprojekt::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-3-semesterprojekt-Debug-260f4db78b54d0ef8901.json",
+					"name" : "3-semesterprojekt",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Lauge/OneDrive/Dokumenter/GitHub/3.Semester/build-3-semesterprojekt-Desktop_Qt_6_2_3_MinGW_64_bit-Debug",
+		"source" : "C:/Users/Lauge/OneDrive/Dokumenter/GitHub/3.Semester/3-semesterprojekt"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}
