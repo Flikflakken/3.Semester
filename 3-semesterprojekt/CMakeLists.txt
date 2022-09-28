@@ -5,13 +5,14 @@ project(3-semesterprojekt LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set( PROJECT_SOURCE_DIR
-    main.cpp
-    camara.cpp)
-
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-add_executable(3-semesterprojekt main.cpp)
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} )
+find_package(Pylon)
+include_directories(${Pylon_INCLUDE_DIRS})
 
+add_executable(3-semesterprojekt main.cpp camera.cpp camera.h)
+
+target_link_libraries( 3-semesterprojekt ${Pylon_LIBRARIES})
 target_link_libraries( 3-semesterprojekt ${OpenCV_LIBS} )
