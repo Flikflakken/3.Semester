@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "camera.h"
+#include "camera_cali.h"
 #include <pylon/PylonIncludes.h>
 
 using namespace std;
@@ -14,6 +15,7 @@ using namespace cv;
 
 int main(int argc, char* argv[])
 {
+
     int myExposure = 30000;
 
     // The exit code of the sample application.
@@ -111,11 +113,20 @@ int main(int argc, char* argv[])
                 //////////// Here your code begins ///////////////////
                 //////////////////////////////////////////////////////
 
+                //calibrate image
+                cv::Mat imageAfterCali;
+                for (int i = 0; i < 1 ;i++ ) {
+                    camera_cali().calibrate_camera(openCvImage, imageAfterCali);
+
+                }
+
+
                 // Create an OpenCV display window.
                 cv::namedWindow( "myWindow", cv::WINDOW_NORMAL); // other options: CV_AUTOSIZE, CV_FREERATIO
 
                 // Display the current image in the OpenCV display window.
-                cv::imshow( "myWindow", openCvImage);
+                cv::imshow( "myWindow", imageAfterCali);
+
 
                 // Detect key press and quit if 'q' is pressed
                 int keyPressed = cv::waitKey(1);

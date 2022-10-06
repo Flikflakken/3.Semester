@@ -12,7 +12,7 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} )
 find_package(Pylon)
 include_directories(${Pylon_INCLUDE_DIRS})
 
-add_executable(3-semesterprojekt main.cpp camera.cpp camera.h)
+add_executable(3-semesterprojekt main.cpp camera.cpp camera.h camera_cali.h camera_cali.cpp)
 
 target_link_libraries( 3-semesterprojekt ${Pylon_LIBRARIES})
 target_link_libraries( 3-semesterprojekt ${OpenCV_LIBS} )
