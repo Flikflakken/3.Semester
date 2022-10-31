@@ -10,7 +10,7 @@ class camera_cali
 {
 public:
     camera_cali();
-    cv::Mat calibrate_camera(cv::Mat input, cv::Mat &output);
+    cv::Mat calibrate_camera(cv::Mat input);
 };
 
 #endif // CAMERA_CALI_H

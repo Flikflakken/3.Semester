@@ -6,10 +6,21 @@ camera_cali::camera_cali()
 
 }
 
-cv::Mat camera_cali::calibrate_camera(cv::Mat input, cv::Mat &output)
+//If you call this function, with flag "1", then it computes intrinsic matrix and distortion coefficitens.
+cv::Mat camera_cali::calibrate_camera(cv::Mat input)
 {
+    cv::Matx33f K(cv::Matx33f::eye());  // intrinsic camera matrix
+    cv::Vec<float, 5> k(0, 0, 0, 0, 0); // distortion coefficients
+
+    std::vector<cv::Mat> rvecs, tvecs;
+    std::vector<double> stdIntrinsics, stdExtrinsics, perViewErrors;
+    int flags = cv::CALIB_FIX_ASPECT_RATIO + cv::CALIB_FIX_K3 +
+            cv::CALIB_ZERO_TANGENT_DIST + cv::CALIB_FIX_PRINCIPAL_POINT;
+    cv::Size frameSize(1440, 1080);
+
+
     std::vector<cv::String> fileNames;
-    cv::glob("/home/mikkel/Programming/C++/3.semester/Pic_cali/Image*.bmp", fileNames, false);
+    cv::glob("/home/mikkel/programmering/semesterprojekt/Pic_cali/Image*.bmp", fileNames, false);
     cv::Size patternSize(10 - 1, 7 - 1);
     std::vector<std::vector<cv::Point2f>> q(fileNames.size());
 
@@ -30,7 +41,6 @@ cv::Mat camera_cali::calibrate_camera(cv::Mat input, cv::Mat &output)
     // Detect feature points
     std::size_t i = 0;
     for (auto const &f : fileNames) {
-        //std::cout << std::string(f) << std::endl;
 
         // 2. Read in the image an call cv::findChessboardCorners()
         cv::Mat img = cv::imread(fileNames[i]);
@@ -45,24 +55,8 @@ cv::Mat camera_cali::calibrate_camera(cv::Mat input, cv::Mat &output)
             cv::cornerSubPix(gray, q[i],cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
             Q.push_back(objp);
         }
-
-        // Display
-       // cv::drawChessboardCorners(img, patternSize, q[i], patternFound);
-       // cv::imshow("chessboard detection", img);
-       // cv::waitKey(0);
-
         i++;
     }
-
-
-    cv::Matx33f K(cv::Matx33f::eye());  // intrinsic camera matrix
-    cv::Vec<float, 5> k(0, 0, 0, 0, 0); // distortion coefficients
-
-    std::vector<cv::Mat> rvecs, tvecs;
-    std::vector<double> stdIntrinsics, stdExtrinsics, perViewErrors;
-    int flags = cv::CALIB_FIX_ASPECT_RATIO + cv::CALIB_FIX_K3 +
-            cv::CALIB_ZERO_TANGENT_DIST + cv::CALIB_FIX_PRINCIPAL_POINT;
-    cv::Size frameSize(1440, 1080);
 
     std::cout << "Calibrating..." << std::endl;
     // 4. Call "float error = cv::calibrateCamera()" with the input coordinates
@@ -74,15 +68,21 @@ cv::Mat camera_cali::calibrate_camera(cv::Mat input, cv::Mat &output)
               << K << "\nk=\n"
               << k << std::endl;
 
+
+
     // Precompute lens correction interpolation
     cv::Mat mapX, mapY;
-    cv::initUndistortRectifyMap(K, k, cv::Matx33f::eye(), K, frameSize, CV_32FC1,
+    cv::initUndistortRectifyMap(K, k, cv::Matx33f::eye(), K, frameSize, CV_8UC3,
                                 mapX, mapY);
 
-
+    cv::Mat output;
     cv::remap(input, output, mapX, mapY, cv::INTER_LINEAR);
+    //cv::imwrite("/home/mikkel/Desktop/remap.bmp", output);
+    cv::imshow("after Remap", output);
+    cv::waitKey(0);
 
     return output;
+
 }
 
 
