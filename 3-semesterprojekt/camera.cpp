@@ -85,18 +85,15 @@ Mat camera::correction(const cv::Mat& src)
     cv::Vec<float, 5> k(-0.244835, 0.129333, 0, 0, 0); // distortion coefficients
 
     cv::Size frameSize(1440,1080);
-    cout << src.rows << endl;
-    cout << src.cols << endl;
-    cout << src.type() << endl;
 
-    Mat output, mapX, mapY;
+    Mat mapX, mapY;
+    Mat output(src.size(), src.type());
     cv::initUndistortRectifyMap(K, k, cv::Matx33f::eye(),
                                 K, frameSize, CV_32FC1, mapX, mapY);
 
     cv::remap(src, output, mapX, mapY, cv::INTER_LINEAR);
-    cout << output.rows << endl;
-    cout << output.cols << endl;
 
+    namedWindow( "after Remap", cv::WINDOW_FREERATIO);
     cv::imshow("after Remap", output);
     cv::waitKey(0);
 
@@ -175,11 +172,11 @@ cv::Mat camera::grabPic(){
     openCvImage = Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
 
     // Create an OpenCV display window.
-    namedWindow( "myWindow", cv::WINDOW_AUTOSIZE); // other options: CV_AUTOSIZE, CV_FREERATIO
+    namedWindow( "Grabbed Image", cv::WINDOW_FREERATIO); // other options: CV_AUTOSIZE, CV_FREERATIO
     // Display the current image in the OpenCV display window.
-    imshow( "myWindow", openCvImage);
+    imshow( "Grabbed Image", openCvImage);
     waitKey(0);
-    return openCvImage;
+    return openCvImage.clone();
 }
 
 string camera::MatType2str(int type) {
