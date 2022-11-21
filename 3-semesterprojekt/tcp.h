@@ -1,42 +1,52 @@
-//
-// Created by mikkel on 11/8/22.
-//
+#ifndef tcp_H
+#define tcp_H
+#include <QObject>
+#include <QTcpSocket>
+#include <QDebug>
+#include <QCoreApplication>
 
-#ifndef INC_3_SEMESTERPROJEKT_TCP_H
-#define INC_3_SEMESTERPROJEKT_TCP_H
-#include <iostream>
-#include "string"
-#include "string.h"
-#include <sys/types.h>
-#include "unistd.h"
-#include "sys/socket.h"
-#include "netdb.h"
-#include "arpa/inet.h"
-
-class tcp {
-
+class tcp : public QObject
+{
+Q_OBJECT;
 public:
-    tcp();
-    bool tcpSocket_Connect();
-    void doHome();
-    void doMove(int width);
+    explicit tcp(QObject *parent = nullptr);
+    ~tcp();
+
+//Funktioner
+    bool connectTcp();
     void acknowledgeErr();
-    void sayBye();
-    void doGrip(float force, float partWidth);
-    void setVerbose(bool status);
-    bool sendMessage(std::string input);
-    bool recive2Messages();
-    bool recive1Messages();
+    void bye();
+    void verbose(bool status);
+    bool validOperation(int operation);
 
+    void home();
+    void move(int width);
+    void grip(float force);
+    void release();
+    bool readTcpData();
+//getter og setter
+    int getMTimeOut() const;
+    void setMTimeOut(int mTimeOut);
+    int getMPort() const;
+    void setMPort(int mPort);
+    const QString &getMip() const;
+    void setMip(const QString &mIp);
+    bool getMHasGripped() const;
+    void setMHasGripped(bool mHasGripped);
 
+signals:
+public slots:
 
 private:
-    std::string mIpaddr = "192.168.100.10";
-    int mPort = 1000;
-    char mBuf[4096];
-    int mSock = socket(AF_INET, SOCK_STREAM, 0);
+    QTcpSocket *mSocket{};
+    int mTimeOut{}, mDelay{}, mPort{};
+    QString mIP;
+    QString mReceivedMessage = "No message";
 
+    bool mConnectionStatus = false;
+    bool mReadyStatus      = false;
+    bool mHasGripped       = false;
+    bool mConfirmedGrip    = false;
 };
 
-
-#endif //INC_3_SEMESTERPROJEKT_TCP_H
+#endif // TCP_H

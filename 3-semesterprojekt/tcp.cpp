@@ -2,125 +2,250 @@
 
 using namespace std;
 
-tcp::tcp() {
+tcp::tcp(QObject *parent) : QObject(parent) {
 
 }
 
-bool tcp::tcpSocket_Connect() {
-    if (mSock == -1)
+bool tcp::connectTcp() {
+    mSocket = new QTcpSocket(this);
+    mSocket->connectToHost(mIP,mPort);
+
+    if (mSocket->waitForConnected(mTimeOut))
     {
-        cout << "Can't create a socket" << endl;
+        qDebug() << "Connected!" << Qt::endl;
+        mConnectionStatus = true;
+        acknowledgeErr();
+        return true;
+    }else{
+        qDebug() << "Connect Error!" << Qt::endl;
+        mConnectionStatus = false;
         return false;
     }
-    sockaddr_in hint;
-    hint.sin_family = AF_INET;
-    hint.sin_port = htons(mPort);
-    inet_pton(AF_INET, mIpaddr.c_str(), &hint.sin_addr);
-    //	Connect to the server on the socket
-    int connectRes = connect(mSock, (sockaddr*)&hint, sizeof(hint));
-    if (connectRes == -1)
+}
+
+void tcp::acknowledgeErr()
+{
+    if (validOperation(1)){
+        mReadyStatus = false;
+        mSocket->write("FSACK()\n");
+
+        qDebug() << "Acknowledgde success!" << Qt::endl;
+
+        if (readTcpData())
+            mReadyStatus = true;
+    }
+}
+
+bool tcp::readTcpData() {
+    mSocket->waitForReadyRead(mTimeOut);
+    mReceivedMessage = mSocket->readAll();
+    qDebug() << mSocket->readAll();
+    qDebug() << mReceivedMessage;
+
+    if(mReceivedMessage.startsWith("ACK"))
     {
-        cout << "Can't connect to server!" << endl;
-        return false;
+        return true;
     }
-    //acknowledgeErr();
-    return true;
-}
-
-bool tcp::sendMessage(std::string input) {
-    char homestr[] = {'h','o','m','e','(',')','\0'};
-    int sendRes = send(mSock, input.c_str(), input.size(),MSG_NOSIGNAL);
-    //int sendRes = send(mSock, input.c_str(), input.size(),MSG_NOSIGNAL);
-    if (sendRes == -1)
+    else if(mReceivedMessage.startsWith("FIN"))
     {
-        cout << "Could not send to server! Whoops!\r\n";;
+        return true;
+    }
+    else if(mReceivedMessage.startsWith("VERBOSE"))
+    {
+        return true;
+    }
+    else
+    {
+        qDebug() << mReceivedMessage;
         return false;
     }
-    return true;
 }
 
-bool tcp::recive2Messages() {
-    memset(&mBuf, 0, 100);
-    int bytesReceived = recv(mSock, &mBuf, 100, 0);
-    if (bytesReceived == -1){
-        cout << "There was an error getting response from server\r\n";
-        return false;
-    }else{
-        //		Display response
-        cout << "SERVER> " << string(mBuf, bytesReceived) << "\n";
+void tcp::home() {
+    if (validOperation(2)){
+        mReadyStatus = false;
+        mSocket->write("HOME()\n");
+        mSocket->waitForBytesWritten(mTimeOut);
+        if (readTcpData())
+            mReadyStatus = true;
     }
-    memset(&mBuf, 0, 100);
-    int bytesReceived1 = recv(mSock, &mBuf, 100, 0);
-    if (bytesReceived1 == -1){
-        cout << "There was an error getting response from server\r\n";
-    }else{
-        //		Display response
-        cout << "SERVER> " << string(mBuf, bytesReceived1) << "\n";
+}
+
+void tcp::move(int width) {
+    if (validOperation(2)){
+        mReadyStatus = false;
+        std::string move = "MOVE(" + std::to_string(width) + ")\n";
+        char* c_array;
+        c_array = &move[0];
+        mSocket->write(c_array);
+
+        mSocket->waitForBytesWritten(mTimeOut);
+        if (readTcpData())
+            mReadyStatus = true;
     }
-    return true;
 }
 
-bool tcp::recive1Messages() {
-    memset(&mBuf, 0, 4096);
-    ssize_t bytesReceived = recv(mSock, mBuf, 4069, 0);
-    if (bytesReceived == -1){
-        cout << "There was an error getting response from server\r\n";
+void tcp::bye() {
+    qDebug() << "Disconnecting.." << Qt::endl;
+    mSocket->write("BYE()\n");
+
+    if (readTcpData()){
+        mSocket->close();
+        mConnectionStatus = false;
+        qDebug() << "Disconnected." << Qt::endl;
     }else{
-        //		Display response
-        cout << "SERVER> " << string(mBuf, bytesReceived) << "\n";
+        qDebug() << "Error during Disconnect" << Qt::endl;
     }
-    return true;
 }
 
-void tcp::doHome() {
-    string userInput = "HOME()\n";
-    sendMessage(userInput);
-    recive2Messages();
+void tcp::verbose(bool status) {
+    if (validOperation(1)){
+        mReadyStatus = false;
+        if(status){
+            mSocket->write("VERBOSE=1\n");
+        }else{
+            mSocket->write("VERBOSE=0\n");
+        }
+        if (readTcpData())
+            mReadyStatus = true;
+    }
 }
 
-void tcp::doMove(int width) {
-    string move = "MOVE(" + std::to_string(width) + ")\n";
-    char* c_array;
-    c_array =&move[0];
-    cout << c_array << endl;
-    sendMessage(c_array);
-    //recive2Messages();
+void tcp::grip(float force) {
+    if(tcp::validOperation(2)){
+        mReadyStatus = false;
+        std::string grip = "GRIP(" + std::to_string(force) + ")\n";
+        char* c_array;
+        c_array = &grip[0];
+        qDebug() << "Move command: " << c_array;
+        mSocket->write(c_array);
+        if(readTcpData()){
+            if (readTcpData()){
+                mReadyStatus = true;
+                mHasGripped = true;
+            }
+
+        }
+    }
 }
 
-void tcp::acknowledgeErr() {
-    string FSACK = "FSACK()\n";
-    sendMessage(FSACK);
-    recive1Messages();
+void tcp::release() {
+    if (validOperation(2)){
+        mReadyStatus = false;
+        mSocket->write("RELEASE()\n");
+        mSocket->waitForBytesWritten(mTimeOut);
+        if(readTcpData())
+            mReadyStatus = true;
+    }
 }
 
-void tcp::sayBye() {
-    string userInput = "BYE()\n";
-    sendMessage(userInput);
-    recive1Messages();
-    close(mSock);
+//Getter og Setter------------------------------------------
+
+int tcp::getMPort() const {
+    return mPort;
 }
 
-void tcp::doGrip(float force, float partWidth) {
-    string userInput;
-    userInput = "GRIP(" + std::to_string(force) + "," + std::to_string(partWidth) + ")\n";
-    sendMessage(userInput);
-    recive2Messages();
+void tcp::setMPort(int mPort) {
+    tcp::mPort = mPort;
 }
 
-void tcp::setVerbose(bool status) { // Status 1 og 0
-    string userInput;
-    userInput = "VERBOSE=(" + std::to_string(status) + ")\n";
-    sendMessage(userInput);
-    recive2Messages();
+const QString &tcp::getMip() const {
+    return mIP;
 }
 
+void tcp::setMip(const QString &mIp) {
+    mIP = mIp;
+}
 
+int tcp::getMTimeOut() const {
+    return mTimeOut;
+}
 
+void tcp::setMTimeOut(int mTimeOut) {
+    tcp::mTimeOut = mTimeOut;
+}
 
+bool tcp::getMHasGripped() const {
+    return mHasGripped;
+}
 
+void tcp::setMHasGripped(bool mHasGripped) {
+    tcp::mHasGripped = mHasGripped;
+}
 
+bool tcp::validOperation(int operation){
+    switch(operation){
+        case 1:{
+            if(mConnectionStatus){
+                return true;
+                break;
+            }
+            else if(!mConnectionStatus){
+                qDebug() << "No connection.";
+                return false;
+                break;
+            }
+            else{
+                qDebug() << "Unspecified error while attempting operation.";
+                return false;
+                break;
+            }
+        }
+        case 2:{
+            if(mConnectionStatus && mReadyStatus){
+                return true;
+                break;
+            }
+            else if(!mConnectionStatus){
+                qDebug() << "No connection.";
+                return false;
+                break;
+            }
+            else if(!mReadyStatus){
+                qDebug() << "Gripper not ready - Case 2!";
+                return false;
+                break;
+            }
+            else{
+                qDebug() << "Unspecified error while attempting operation.";
+                return false;
+                break;
+            }
+        }
+        case 3:{
+            if(mConnectionStatus && mReadyStatus && mHasGripped){
+                return true;
+                break;
+            }
+            else if(!mConnectionStatus){
+                qDebug() << "No connection.";
+                return false;
+                break;
+            }
+            else if(!mReadyStatus){
+                qDebug() << "Gripper not ready - Case 3!";
+                return false;
+                break;
+            }
+            else if(!mHasGripped){
+                qDebug() << "Nothing Gripped Yet!";
+                return false;
+                break;
+            }
+            else{
+                qDebug() << "Unspecified error while attempting operation.";
+                return false;
+                break;
+            }
+        }
+        default:{
+            qDebug() << "Statement fell through all cases.. Recheck that?";
+            return false;
+        }
+    }
+}
 
-
+tcp::~tcp() = default;
 
 
 

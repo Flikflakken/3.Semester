@@ -47,8 +47,8 @@ Point3f picture_handling::findObject(Mat input)
         // circle center
         Vec3i c = circles[i];
         Point center = Point(c[0], c[1]);
-        pixelPoint.x = center.x;
-        pixelPoint.y = center.y;
+        pixelPoint.x = center.y;
+        pixelPoint.y = center.x;
         pixelPoint.z = 1;
         circle(input, center, 1, Scalar(0,100,100), 3, LINE_AA);
         cout << "center point : " << center << endl;
@@ -57,8 +57,8 @@ Point3f picture_handling::findObject(Mat input)
         circle(input, center, radius, Scalar(255,0,255), 3, LINE_AA);
     }
 
-    imshow("detected circles", input);
-    waitKey(0);
+    //imshow("detected circles", input);
+    //waitKey(0);
     cout << pixelPoint << endl;
     return pixelPoint;
 }

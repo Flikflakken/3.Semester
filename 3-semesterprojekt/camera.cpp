@@ -93,9 +93,9 @@ Mat camera::correction(const cv::Mat& src)
 
     cv::remap(src, output, mapX, mapY, cv::INTER_LINEAR);
 
-    namedWindow( "after Remap", cv::WINDOW_FREERATIO);
-    cv::imshow("after Remap", output);
-    cv::waitKey(0);
+    //namedWindow( "after Remap", cv::WINDOW_FREERATIO);
+    //cv::imshow("after Remap", output);
+    //cv::waitKey(0);
 
     return output;
 }
@@ -174,8 +174,8 @@ cv::Mat camera::grabPic(){
     // Create an OpenCV display window.
     namedWindow( "Grabbed Image", cv::WINDOW_FREERATIO); // other options: CV_AUTOSIZE, CV_FREERATIO
     // Display the current image in the OpenCV display window.
-    imshow( "Grabbed Image", openCvImage);
-    waitKey(0);
+    //imshow( "Grabbed Image", openCvImage);
+    //waitKey(0);
     return openCvImage.clone();
 }
 
