@@ -27,7 +27,8 @@ add_executable(3-semesterprojekt
         camera_cali.h camera_cali.cpp
         picture_handling.h picture_handling.cpp
         gripper.h gripper.cpp
-        tcp.cpp tcp.h)
+        tcp.cpp tcp.h
+        robotController.cpp robotController.h)
 
 target_link_libraries( 3-semesterprojekt PRIVATE
     ${Pylon_LIBRARIES}

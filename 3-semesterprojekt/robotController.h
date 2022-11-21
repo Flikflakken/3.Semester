@@ -1,0 +1,14 @@
+//
+// Created by mikkel on 11/21/22.
+//
+
+#ifndef INC_3_SEMESTERPROJEKT_ROBOTCONTROLLER_H
+#define INC_3_SEMESTERPROJEKT_ROBOTCONTROLLER_H
+
+
+class robotController {
+
+};
+
+
+#endif //INC_3_SEMESTERPROJEKT_ROBOTCONTROLLER_H
