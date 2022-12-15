@@ -18,12 +18,17 @@ public:
     void bye();
     void verbose(bool status);
     bool validOperation(int operation);
+    void gripperState();
 
     void home();
     void move(int width);
-    void grip(float force);
-    void release();
+    void grip(float force, float width);
+    void release(float pullBack);
     bool readTcpData();
+//MATLAB
+    std::string sendDataMatLab(double input, double input2);
+    bool connectTcpMatLab();
+    std::string readTcpDataMatLab();
 //getter og setter
     int getMTimeOut() const;
     void setMTimeOut(int mTimeOut);

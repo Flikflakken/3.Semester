@@ -10,10 +10,9 @@ class picture_handling
 {
 public:
     picture_handling();
-
-    cv::Point3f findObject(cv::Mat input);
-
+    cv::Point3f findObject(cv::Mat input, int minRadius, int maxRadius);
     cv::Matx33d homography();
+    cv::Matx33d homography2();
 };
 
 #endif // PICTURE_HANDLING_H

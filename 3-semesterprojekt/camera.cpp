@@ -103,9 +103,9 @@ Mat camera::correction(const cv::Mat& src)
 void camera::correction_test() {
 
     Mat src = imread("/home/mikkel/Desktop/Image__2022-10-25__11-41-53.bmp");
-    namedWindow( "src", cv::WINDOW_AUTOSIZE);
-    imshow("src", src);
-    waitKey(0);
+    //namedWindow( "src", cv::WINDOW_AUTOSIZE);
+    //imshow("src", src);
+    //waitKey(0);
 
     cv::Matx33f K(1238.3773, 0, 719.5,
                   0, 1238.3773, 539.5,
@@ -172,7 +172,7 @@ cv::Mat camera::grabPic(){
     openCvImage = Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
 
     // Create an OpenCV display window.
-    namedWindow( "Grabbed Image", cv::WINDOW_FREERATIO); // other options: CV_AUTOSIZE, CV_FREERATIO
+    //namedWindow( "Grabbed Image", cv::WINDOW_FREERATIO); // other options: CV_AUTOSIZE, CV_FREERATIO
     // Display the current image in the OpenCV display window.
     //imshow( "Grabbed Image", openCvImage);
     //waitKey(0);
